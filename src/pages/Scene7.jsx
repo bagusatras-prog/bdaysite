@@ -1,47 +1,48 @@
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { popInItem } from "../animations/variants";
-import { birthdayData } from "../data/birthdayData";
-import confetti from "canvas-confetti";
-import { Heart, Sparkles, RotateCcw, X, Trash2 } from "lucide-react";
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { popInItem } from '../animations/variants';
+import { birthdayData } from '../data/birthdayData';
+import confetti from 'canvas-confetti';
+import { Heart, Sparkles, RotateCcw, X, Trash2 } from 'lucide-react';
 
 export const Scene7 = ({ onRestart }) => {
   const [showWish, setShowWish] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
-
-  // Menyimpan dan memuat foto selfie dari localStorage
+  
+  // Memuat foto selfie dari localStorage dengan aman
   const [selfies, setSelfies] = useState(() => {
     try {
-      const saved = localStorage.getItem("birthday_selfies");
+      const saved = localStorage.getItem('birthday_selfies');
       return saved ? JSON.parse(saved) : [];
     } catch (e) {
       return [];
     }
   });
-
+  
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
+  // Menyimpan ke localStorage setiap kali state selfies berubah
   useEffect(() => {
     try {
-      localStorage.setItem("birthday_selfies", JSON.stringify(selfies));
-    } catch (e) {}
+      localStorage.setItem('birthday_selfies', JSON.stringify(selfies));
+    } catch (e) {
+      console.error("Storage penuh:", e);
+    }
   }, [selfies]);
 
   const handleCameraClick = async () => {
     setIsCameraOpen(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" } 
       });
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
     } catch (err) {
-      alert(
-        "Tidak dapat mengakses kamera. Pastikan izin kamera diaktifkan pada browser!",
-      );
+      alert("Tidak dapat mengakses kamera. Pastikan izin kamera diaktifkan pada browser!");
       setIsCameraOpen(false);
     }
   };
@@ -56,14 +57,20 @@ export const Scene7 = ({ onRestart }) => {
   const capturePhoto = () => {
     const video = videoRef.current;
     if (!video) return;
+
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth || 640;
     canvas.height = video.videoHeight || 480;
     const ctx = canvas.getContext("2d");
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const dataUrl = canvas.toDataURL("image/png");
+    
+    if (ctx) {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Menggunakan format JPEG dengan kompresi 0.8 agar ukuran file ringan dan tidak memenuhi storage
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
 
-    setSelfies((prev) => [...prev, dataUrl]);
+      setSelfies((prev) => [...prev, dataUrl]);
+    }
+
     closeCamera();
 
     try {
@@ -82,15 +89,16 @@ export const Scene7 = ({ onRestart }) => {
         particleCount: 100,
         spread: 100,
         origin: { y: 0.5 },
-        colors: ["#F2C4CE", "#FAF6EE", "#E65B65", "#FFD166"],
+        colors: ['#F2C4CE', '#FAF6EE', '#E65B65', '#FFD166']
       });
     } catch (e) {}
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[75vh] px-4 max-w-xl mx-auto text-center relative pb-20">
+      
       {/* Main Dark Card Container */}
-      <motion.div
+      <motion.div 
         variants={popInItem}
         className="bg-[#2C2421] text-[#FAF6EE] border-2 border-[#4A3B32] rounded-3xl p-8 sm:p-10 shadow-scrapbook relative w-full overflow-hidden mb-8"
       >
@@ -98,15 +106,16 @@ export const Scene7 = ({ onRestart }) => {
 
         {!showWish ? (
           <div className="flex flex-col items-center py-6 relative z-10">
+            
             {/* GAMBAR SNOOPY SINGING */}
-            <motion.div
+            <motion.div 
               animate={{ y: [0, -8, 0], rotate: [0, 2, -2, 0] }}
               transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
               className="mb-6"
             >
-              <img
-                src="/images/snoopysinging.png"
-                alt="Snoopy Singing"
+              <img 
+                src="/images/snoopysinging.png" 
+                alt="Snoopy Singing" 
                 className="w-36 sm:w-44 object-contain drop-shadow-lg"
               />
             </motion.div>
@@ -114,10 +123,9 @@ export const Scene7 = ({ onRestart }) => {
             <h3 className="font-display text-2xl sm:text-3xl font-bold mb-4">
               One Last Thing...
             </h3>
-
+            
             <p className="font-handwriting text-lg text-[#D9C8B4] mb-8 max-w-md">
-              Ada satu harapan terakhir yang ingin kuucap khusus untukmu di hari
-              spesial ini...
+              Ada satu harapan terakhir yang ingin kuucap khusus untukmu di hari spesial ini...
             </p>
 
             <motion.button
@@ -130,7 +138,7 @@ export const Scene7 = ({ onRestart }) => {
             </motion.button>
           </div>
         ) : (
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="py-4 flex flex-col items-center relative z-10"
@@ -162,9 +170,7 @@ export const Scene7 = ({ onRestart }) => {
       {/* DAFTAR FOTO SELPIE DENGAN EFEK GOYANG-GOYANG LEMBUT */}
       {selfies.length > 0 && (
         <div className="w-full mb-8">
-          <h4 className="font-display text-xl font-bold text-[#4A3B32] mb-4">
-            Memory Selfies Gallery 📸✨
-          </h4>
+          <h4 className="font-display text-xl font-bold text-[#4A3B32] mb-4">Memory Selfies Gallery 📸✨</h4>
           <div className="flex flex-wrap justify-center gap-4">
             {selfies.map((photo, idx) => (
               <motion.div
@@ -173,11 +179,7 @@ export const Scene7 = ({ onRestart }) => {
                 animate={{ y: [0, -6, 0], rotate: [-3, 3, -3] }}
                 transition={{
                   y: { repeat: Infinity, duration: 3, ease: "easeInOut" },
-                  rotate: {
-                    repeat: Infinity,
-                    duration: 3.5,
-                    ease: "easeInOut",
-                  },
+                  rotate: { repeat: Infinity, duration: 3.5, ease: "easeInOut" }
                 }}
                 className="bg-white border-2 border-[#4A3B32] p-2 pb-6 rounded-xl shadow-scrapbook w-32 flex flex-col items-center relative group"
               >
@@ -217,7 +219,7 @@ export const Scene7 = ({ onRestart }) => {
                 onClick={closeCamera}
                 className="absolute top-4 right-4 text-[#4A3B32] hover:text-[#E65B65]"
               >
-                <X size={24} />
+                <X size= {24} />
               </button>
               <h3 className="font-display text-2xl font-bold mb-4 text-[#4A3B32]">
                 Smile! Take a Selfie 📸✨
@@ -268,6 +270,7 @@ export const Scene7 = ({ onRestart }) => {
           />
         </motion.div>
       </div>
+
     </div>
   );
 };
