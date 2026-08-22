@@ -9,7 +9,7 @@ export const Scene7 = ({ onRestart }) => {
   const [showWish, setShowWish] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
 
-  // Menyimpan dan memuat foto selfie dari localStorage agar tetap terpampang
+  // Menyimpan dan memuat foto selfie dari localStorage
   const [selfies, setSelfies] = useState(() => {
     try {
       const saved = localStorage.getItem("birthday_selfies");
@@ -159,7 +159,7 @@ export const Scene7 = ({ onRestart }) => {
         )}
       </motion.div>
 
-      {/* DAFTAR FOTO SELPIE YANG TERPAPANG DAN BERPUTAR */}
+      {/* DAFTAR FOTO SELPIE DENGAN EFEK GOYANG-GOYANG LEMBUT */}
       {selfies.length > 0 && (
         <div className="w-full mb-8">
           <h4 className="font-display text-xl font-bold text-[#4A3B32] mb-4">
@@ -169,11 +169,15 @@ export const Scene7 = ({ onRestart }) => {
             {selfies.map((photo, idx) => (
               <motion.div
                 key={idx}
-                initial={{ scale: 0, rotate: -15 }}
-                animate={{ scale: 1, rotate: [0, 360, 0] }}
+                initial={{ scale: 0, rotate: -3 }}
+                animate={{ y: [0, -6, 0], rotate: [-3, 3, -3] }}
                 transition={{
-                  scale: { duration: 0.5 },
-                  rotate: { repeat: Infinity, duration: 12, ease: "linear" },
+                  y: { repeat: Infinity, duration: 3, ease: "easeInOut" },
+                  rotate: {
+                    repeat: Infinity,
+                    duration: 3.5,
+                    ease: "easeInOut",
+                  },
                 }}
                 className="bg-white border-2 border-[#4A3B32] p-2 pb-6 rounded-xl shadow-scrapbook w-32 flex flex-col items-center relative group"
               >
