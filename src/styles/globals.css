@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #FAF6EE;
+    color: #4A3B32;
+    font-family: 'Nunito', sans-serif;
+    touch-action: manipulation;
+  }
+}
+
+/* Paper Texture Pattern Background */
+.paper-pattern {
+  background-color: #FAF6EE;
+  background-image: radial-gradient(#E8DFD1 0.75px, transparent 0.75px), radial-gradient(#E8DFD1 0.75px, #FAF6EE 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #FAF6EE;
+}
+::-webkit-scrollbar-thumb {
+  background: #D9C8B4;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8C7A6B;
+}
+
+/* Custom Cursor Option */
+.custom-cursor-active button,
+.custom-cursor-active a,
+.custom-cursor-active [role="button"] {
+  cursor: pointer;
+}
+
+/* Tape decoration effects */
+.tape-top {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 90px;
+  height: 26px;
+  background-color: rgba(245, 230, 180, 0.7);
+  border-left: 2px dashed rgba(200, 180, 130, 0.4);
+  border-right: 2px dashed rgba(200, 180, 130, 0.4);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  z-index: 10;
+}
