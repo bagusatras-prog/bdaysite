@@ -9,7 +9,7 @@ export const Scene7 = ({ onRestart }) => {
   const [showWish, setShowWish] = useState(false);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   
-  // Memuat foto selfie dari localStorage dengan aman
+  // Menyimpan dan memuat foto selfie dari localStorage agar tetap terpampang
   const [selfies, setSelfies] = useState(() => {
     try {
       const saved = localStorage.getItem('birthday_selfies');
@@ -22,21 +22,16 @@ export const Scene7 = ({ onRestart }) => {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
-  // Menyimpan ke localStorage setiap kali state selfies berubah
   useEffect(() => {
     try {
       localStorage.setItem('birthday_selfies', JSON.stringify(selfies));
-    } catch (e) {
-      console.error("Storage penuh:", e);
-    }
+    } catch (e) {}
   }, [selfies]);
 
   const handleCameraClick = async () => {
     setIsCameraOpen(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: "user" } 
-      });
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -57,20 +52,14 @@ export const Scene7 = ({ onRestart }) => {
   const capturePhoto = () => {
     const video = videoRef.current;
     if (!video) return;
-
     const canvas = document.createElement("canvas");
     canvas.width = video.videoWidth || 640;
     canvas.height = video.videoHeight || 480;
     const ctx = canvas.getContext("2d");
-    
-    if (ctx) {
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      // Menggunakan format JPEG dengan kompresi 0.8 agar ukuran file ringan dan tidak memenuhi storage
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL("image/png");
 
-      setSelfies((prev) => [...prev, dataUrl]);
-    }
-
+    setSelfies((prev) => [...prev, dataUrl]);
     closeCamera();
 
     try {
@@ -167,7 +156,7 @@ export const Scene7 = ({ onRestart }) => {
         )}
       </motion.div>
 
-      {/* DAFTAR FOTO SELPIE DENGAN EFEK GOYANG-GOYANG LEMBUT */}
+      {/* DAFTAR FOTO SELPIE YANG TERPAPANG DAN BERPUTAR */}
       {selfies.length > 0 && (
         <div className="w-full mb-8">
           <h4 className="font-display text-xl font-bold text-[#4A3B32] mb-4">Memory Selfies Gallery 📸✨</h4>
@@ -175,11 +164,11 @@ export const Scene7 = ({ onRestart }) => {
             {selfies.map((photo, idx) => (
               <motion.div
                 key={idx}
-                initial={{ scale: 0, rotate: -3 }}
-                animate={{ y: [0, -6, 0], rotate: [-3, 3, -3] }}
+                initial={{ scale: 0, rotate: -15 }}
+                animate={{ scale: 1, rotate: [0, 360, 0] }}
                 transition={{
-                  y: { repeat: Infinity, duration: 3, ease: "easeInOut" },
-                  rotate: { repeat: Infinity, duration: 3.5, ease: "easeInOut" }
+                  scale: { duration: 0.5 },
+                  rotate: { repeat: Infinity, duration: 12, ease: "linear" }
                 }}
                 className="bg-white border-2 border-[#4A3B32] p-2 pb-6 rounded-xl shadow-scrapbook w-32 flex flex-col items-center relative group"
               >
@@ -219,7 +208,7 @@ export const Scene7 = ({ onRestart }) => {
                 onClick={closeCamera}
                 className="absolute top-4 right-4 text-[#4A3B32] hover:text-[#E65B65]"
               >
-                <X size= {24} />
+                <X size={24} />
               </button>
               <h3 className="font-display text-2xl font-bold mb-4 text-[#4A3B32]">
                 Smile! Take a Selfie 📸✨
